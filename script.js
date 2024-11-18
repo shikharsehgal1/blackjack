@@ -75,6 +75,8 @@ function updateChips() {
 // Check game result
 function checkResult() {
   const result = document.getElementById("result");
+  document.getElementById("hit-btn").disabled = true;
+  document.getElementById("stand-btn").disabled = true;
 
   if (playerScore > 21) {
     result.textContent = "You busted! Dealer wins.";
@@ -96,8 +98,9 @@ function checkResult() {
 
   updateChips();
   checkChips();
-  document.getElementById("game-area").style.display = "none";
-  document.getElementById("betting-section").style.display = "block";
+  setTimeout(() => {
+    resetForNextRound();
+  }, 2000); // Delay to allow the user to see the result
 }
 
 // Check if player is out of chips
@@ -136,6 +139,14 @@ function startRound() {
   document.getElementById("result").textContent = "";
   document.getElementById("game-area").style.display = "block";
   document.getElementById("betting-section").style.display = "none";
+  document.getElementById("hit-btn").disabled = false;
+  document.getElementById("stand-btn").disabled = false;
+}
+
+// Reset UI for next round
+function resetForNextRound() {
+  document.getElementById("game-area").style.display = "none";
+  document.getElementById("betting-section").style.display = "block";
 }
 
 // Event listeners
