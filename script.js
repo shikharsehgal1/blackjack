@@ -106,8 +106,8 @@ function checkResult() {
 // Check if player is out of chips
 function checkChips() {
   if (chips <= 0) {
-    alert("You're out of chips! Game over.");
     document.getElementById("betting-section").style.display = "none";
+    document.getElementById("rebuy-section").style.display = "block";
   }
 }
 
@@ -178,6 +178,18 @@ document.getElementById("start-game").addEventListener("click", () => {
     updateChips();
     document.getElementById("buyin-section").style.display = "none";
     document.getElementById("game-section").style.display = "block";
+  } else {
+    alert("Buy-in must be at least 10 chips.");
+  }
+});
+
+document.getElementById("rebuy-game").addEventListener("click", () => {
+  const rebuyInput = parseInt(document.getElementById("rebuy").value);
+  if (rebuyInput >= 10) {
+    chips = rebuyInput;
+    updateChips();
+    document.getElementById("rebuy-section").style.display = "none";
+    document.getElementById("betting-section").style.display = "block";
   } else {
     alert("Buy-in must be at least 10 chips.");
   }
