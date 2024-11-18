@@ -78,7 +78,11 @@ function checkResult() {
   document.getElementById("hit-btn").disabled = true;
   document.getElementById("stand-btn").disabled = true;
 
-  if (playerScore > 21) {
+  // Check for Blackjack
+  if (playerScore === 21 && playerHand.length === 2) {
+    result.textContent = "Blackjack! You win with a 3:2 payout.";
+    chips += Math.floor(currentBet * 1.5); // Blackjack payout
+  } else if (playerScore > 21) {
     result.textContent = "You busted! Dealer wins.";
     chips -= currentBet;
   } else if (dealerScore > 21) {
@@ -100,7 +104,7 @@ function checkResult() {
   checkChips();
   setTimeout(() => {
     resetForNextRound();
-  }, 2000); // Delay to allow the user to see the result
+  }, 2000); // Delay to show result before resetting
 }
 
 // Check if player is out of chips
