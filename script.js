@@ -6,6 +6,7 @@ let dealerHand = [];
 let playerScore = 0;
 let dealerScore = 0;
 let chips = 0;
+let currentBet = 0;
 
 // Initialize the deck
 function createDeck() {
@@ -66,32 +67,44 @@ function updateScores() {
   document.getElementById("dealer-score").textContent = `Score: ${dealerScore}`;
 }
 
+// Update chips display
+function updateChips() {
+  document.getElementById("chips").textContent = chips;
+}
+
 // Check game result
 function checkResult() {
   const result = document.getElementById("result");
 
   if (playerScore > 21) {
     result.textContent = "You busted! Dealer wins.";
-    chips -= 10;
-    updateChips();
-    endGame();
+    chips -= currentBet;
   } else if (dealerScore > 21) {
     result.textContent = "Dealer busted! You win.";
-    chips += 10;
-    updateChips();
-    endGame();
+    chips += currentBet;
   } else if (dealerScore >= 17) {
     if (playerScore > dealerScore) {
       result.textContent = "You win!";
-      chips += 10;
+      chips += currentBet;
     } else if (playerScore < dealerScore) {
       result.textContent = "Dealer wins.";
-      chips -= 10;
+      chips -= currentBet;
     } else {
       result.textContent = "It's a tie!";
     }
-    updateChips();
-    endGame();
+  }
+
+  updateChips();
+  checkChips();
+  document.getElementById("game-area").style.display = "none";
+  document.getElementById("betting-section").style.display = "block";
+}
+
+// Check if player is out of chips
+function checkChips() {
+  if (chips <= 0) {
+    alert("You're out of chips! Game over.");
+    document.getElementById("betting-section").style.display = "none";
   }
 }
 
@@ -105,15 +118,8 @@ function dealerTurn() {
   checkResult();
 }
 
-// End game
-function endGame() {
-  document.getElementById("hit-btn").disabled = true;
-  document.getElementById("stand-btn").disabled = true;
-}
-
-// Restart game
-function restartGame() {
-  createDeck();
+// Start a new round
+function startRound() {
   playerHand = [];
   dealerHand = [];
   playerScore = 0;
@@ -128,13 +134,8 @@ function restartGame() {
   updateScores();
 
   document.getElementById("result").textContent = "";
-  document.getElementById("hit-btn").disabled = false;
-  document.getElementById("stand-btn").disabled = false;
-}
-
-// Update chips display
-function updateChips() {
-  document.getElementById("chips").textContent = chips;
+  document.getElementById("game-area").style.display = "block";
+  document.getElementById("betting-section").style.display = "none";
 }
 
 // Event listeners
@@ -142,23 +143,30 @@ document.getElementById("hit-btn").addEventListener("click", () => {
   dealCard(playerHand);
   displayCards(playerHand, "player-cards");
   updateScores();
-  checkResult();
+  if (playerScore > 21) checkResult();
 });
 
 document.getElementById("stand-btn").addEventListener("click", () => {
   dealerTurn();
 });
 
-document.getElementById("restart-btn").addEventListener("click", restartGame);
+document.getElementById("place-bet").addEventListener("click", () => {
+  const betInput = parseInt(document.getElementById("bet").value);
+  if (betInput > 0 && betInput <= chips) {
+    currentBet = betInput;
+    startRound();
+  } else {
+    alert("Invalid bet amount.");
+  }
+});
 
 document.getElementById("start-game").addEventListener("click", () => {
-  const buyinInput = document.getElementById("buyin").value;
-  chips = parseInt(buyinInput);
-  if (chips >= 10) {
+  const buyinInput = parseInt(document.getElementById("buyin").value);
+  if (buyinInput >= 10) {
+    chips = buyinInput;
+    updateChips();
     document.getElementById("buyin-section").style.display = "none";
     document.getElementById("game-section").style.display = "block";
-    restartGame();
-    updateChips();
   } else {
     alert("Buy-in must be at least 10 chips.");
   }
